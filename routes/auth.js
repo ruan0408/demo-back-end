@@ -2,27 +2,26 @@
  * Created by ruan0408 on 10/02/17.
  */
 var express = require('express');
-var passport = require('passport');
 var jwt    = require('jsonwebtoken');
 var config = require('../config');
+var User = require('../models/user');
 
 var authRouter = express.Router();
 
-authRouter.post('/auth', function(req, res, next) {
-    passport.authenticate('local', { session: false }, function(err, user, info) {
-        if (err) { return next(err); }
-        if (!user) { return res.send({bla: 'NAO ROLOU'}); }
-        // return res.send({bla: 'ROLOU'})
+authRouter.post('/', function(req, res, next) {
+
+    var user = new User({username: req.body.username, password: req.body.password});
+
+    User.findOne({ username: user.username }, function (err, user) {
+        if (err) {return res.send('authentication failed');}
+        if (!user) {return res.send('username doesnt exist');}
+
         var token = jwt.sign({username: user.username, password: user.password}, config.secret, {
             expiresIn: 60*60*24 // expires in 24 hours
         });
+        res.json({user: user, token: token});
+    });
 
-        res.json({
-            success: true,
-            message: 'Enjoy your token!',
-            token: token
-        });
-    })(req, res, next);
 });
 
 module.exports = authRouter;
