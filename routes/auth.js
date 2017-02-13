@@ -6,10 +6,9 @@ var passport = require('passport');
 var jwt    = require('jsonwebtoken');
 var config = require('../config');
 
-var app = express();
-var loginRouter = express.Router();
+var authRouter = express.Router();
 
-loginRouter.post('/login', function(req, res, next) {
+authRouter.post('/auth', function(req, res, next) {
     passport.authenticate('local', { session: false }, function(err, user, info) {
         if (err) { return next(err); }
         if (!user) { return res.send({bla: 'NAO ROLOU'}); }
@@ -26,4 +25,4 @@ loginRouter.post('/login', function(req, res, next) {
     })(req, res, next);
 });
 
-module.exports = loginRouter;
+module.exports = authRouter;

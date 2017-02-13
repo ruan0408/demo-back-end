@@ -6,7 +6,9 @@ var morgan = require('morgan');
 var cookieParser = require('cookie-parser');
 
 var apiRouter = require('./routes/api');
-var loginRouter = require('./routes/login');
+var authRouter = require('./routes/auth');
+var usersRouter = require('./routes/users');
+var authMiddleware = require('./middleware/auth');
 var config = require('./config');
 
 var setUpPassport = require("./passportsetup");
@@ -31,8 +33,12 @@ app.use(function(req, res, next) {
     next();
 });
 
-app.use('/', loginRouter);
+app.use('/', authRouter);
 app.use('/api', apiRouter);
+apiRouter.use('/users', usersRouter);
+
+// bypass the registration routing
+apiRouter.use(authMiddleware);
 
 app.listen(app.get('port'), function () {
     console.log('WE ARE LISTENING');

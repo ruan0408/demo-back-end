@@ -8,7 +8,6 @@ var User = require('../models/user');
 var usersRouter = express.Router();
 
 usersRouter.get('/', function (req, res, next) {
-    console.log('YOU MADE A GET');
     User.find(function (err, users) {
         if (err) return console.log(err);
         res.send(users);
@@ -16,7 +15,6 @@ usersRouter.get('/', function (req, res, next) {
 });
 
 usersRouter.post('/', function (req, res, next) {
-    console.log('YOU MADE A POST');
     var username = req.body.username;
     var password = req.body.password;
 
