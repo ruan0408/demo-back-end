@@ -4,22 +4,24 @@
 
 var config = require('../config');
 var jwt = require('jsonwebtoken');
+var User = require('../models/user');
 
 module.exports = function(req, res, next) {
 
-    // check header or url parameters or post parameters for token
     var token = req.body.token || req.query.token || req.headers['x-access-token'];
 
-    // decode token
     if (token) {
-        // verifies secret and checks exp
-        jwt.verify(token, config.secret, function(err, decoded) {
+        jwt.verify(token, config.secret, function(err, decodedUser) {
             if (err) {
                 return res.json({ success: false, message: 'Failed to authenticate token.' });
             } else {
-                // if everything is good, save to request for use in other routes
-                req.decoded = decoded;
-                next();
+                User.findOne({username: decodedUser.username}, function (err, user) {
+                    if (err || !user) return res.json({success: false, message: 'Token doesnt corresponde to a known user'});
+                    else {
+                        req.decoded = decodedUser;
+                        next();
+                    }
+                });
             }
         });
     } else {
@@ -27,6 +29,5 @@ module.exports = function(req, res, next) {
             success: false,
             message: 'No token provided.'
         });
-
     }
 };

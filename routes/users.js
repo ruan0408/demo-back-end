@@ -3,8 +3,8 @@
  */
 
 var express = require('express');
-var User = require('../models/user');
 
+var User = require('../models/user');
 var usersRouter = express.Router();
 
 usersRouter.get('/', function (req, res, next) {

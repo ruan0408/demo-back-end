@@ -3,5 +3,5 @@
  */
 module.exports = {
     secret: 'myfuckingsecret',
-    database: "mongodb://localhost:27017"
+    database: "mongodb://localhost:27017/test"
 };
