@@ -1,12 +1,14 @@
 /**
  * Created by ruan0408 on 10/02/17.
  */
-var express = require('express');
-var jwt    = require('jsonwebtoken');
-var config = require('../config');
-var User = require('../models/user');
+let express = require('express');
+let jwt = require('jsonwebtoken');
+let config = require('../config');
+let User = require('../models/user');
 
-var authRouter = express.Router();
+let checkUserLoggedIn = require('../helpers/checkUserLoggedIn');
+
+let authRouter = express.Router();
 
 authRouter.post('/', function(req, res, next) {
 
@@ -25,14 +27,33 @@ authRouter.post('/', function(req, res, next) {
                 username: user.username,
                 password: user.password
             }, config.secret, {
-                expiresIn: 60 * 60 * 24 // expires in 24 hours
+                expiresIn: 60*60 // expires in 10 seconds
             });
 
-            res.set('X-Access-Token', token);
+            res.set('Access-Token', token);
             res.json(user);
         });
     });
 
 });
+
+authRouter.get('/', function (req, res, next) {
+    let token = req.query.token;
+    checkUserLoggedIn(token, handleResponse(res));
+    console.log('terminei o get ' + token);
+});
+
+function handleResponse(res) {
+    console.log('executei a função externa');
+
+    return function (err, isLoggedIn) {
+        console.log('AUEHAUHEUAHEUHEUA');
+        if (err) {
+            console.log(err);
+            return res.json({status: 'an error occurred'});
+        }
+        res.json({status: isLoggedIn});
+    }
+}
 
 module.exports = authRouter;

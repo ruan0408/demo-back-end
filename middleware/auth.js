@@ -6,28 +6,31 @@ var config = require('../config');
 var jwt = require('jsonwebtoken');
 var User = require('../models/user');
 
-module.exports = function(req, res, next) {
+var response;
+var nextMiddleware;
 
-    var token = req.body.token || req.query.token || req.headers['x-access-token'];
+function checkAuthentication (req, res, next) {
+    response = res;
+    nextMiddleware = next;
 
-    if (token) {
-        jwt.verify(token, config.secret, function(err, decodedUser) {
-            if (err) {
-                return res.json({ success: false, message: 'Failed to authenticate token.' });
-            } else {
-                User.findOne({username: decodedUser.username}, function (err, user) {
-                    if (err || !user) return res.json({success: false, message: 'Token doesnt corresponde to a known user'});
-                    else {
-                        req.decoded = decodedUser;
-                        next();
-                    }
-                });
-            }
-        });
-    } else {
-        return res.status(403).send({
-            success: false,
-            message: 'No token provided.'
-        });
-    }
-};
+    var token = req.body.token || req.query.token || req.headers['access-token'];
+
+    jwt.verify(token, config.secret, handleTokenResponse);
+
+}
+
+function handleTokenResponse (err, decodedUser) {
+    if (err)
+        return response.json({ success: false, message: 'Failed to authenticate token.' });
+
+    User.findOne({username: decodedUser.username}, handleUser);
+}
+
+function handleUser (err, user) {
+    if (err || !user)
+        return response.json({success: false, message: 'Token doesnt correspond to a known user'});
+
+    nextMiddleware();
+}
+
+module.exports = checkAuthentication;
