@@ -2,8 +2,8 @@
  * Created by ruan0408 on 13/02/17.
  */
 
-var express = require('express');
-var protectedRouter = express.Router();
+let express = require('express');
+let protectedRouter = express.Router();
 
 
 protectedRouter.get('/', function (req, res, next) {

@@ -2,8 +2,8 @@
  * Created by ruan0408 on 09/02/17.
  */
 
-var express = require('express');
+let express = require('express');
 
-var apiRouter = express.Router();
+let apiRouter = express.Router();
 
 module.exports = apiRouter;
