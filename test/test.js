@@ -14,10 +14,5 @@ describe('GET /api/users', function () {
                if (!('username' in res.body[0])) throw new Error("missing username key");
            })
            .expect(done);
-           // .end(function(err, res) {
-           //     if (err) return done(err);
-           //     // console.log(res.body);
-           //     done();
-           // });
    });
 });

@@ -3,6 +3,7 @@
  */
 
 let express = require('express');
+let acl = require('acl');
 
 let User = require('../models/user');
 let usersRouter = express.Router();
