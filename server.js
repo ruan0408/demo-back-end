@@ -4,8 +4,6 @@
 
 let express = require('express');
 let bodyParser = require('body-parser');
-let mongoose = require('mongoose');
-let passport = require('passport');
 let morgan = require('morgan');
 let cookieParser = require('cookie-parser');
 
@@ -18,9 +16,6 @@ let protectedRouter = require('./routes/protected');
 let authMiddleware = require('./middleware/auth');
 
 let app = express();
-
-mongoose.Promise = global.Promise;
-mongoose.connect(config.database);
 
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());

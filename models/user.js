@@ -2,41 +2,45 @@
  * Created by ruan0408 on 09/02/17.
  */
 
-let mongoose = require('mongoose');
+let sequelize = require('../sequelize');
+let Sequelize = require('sequelize');
 let bcrypt = require("bcrypt-nodejs");
-let SALT_FACTOR = 10;
 
-let userSchema = mongoose.Schema({
-    username: {type: String, unique: true},
-    password: {type: String}
+let User = sequelize.define('user', {
+    username: {type: Sequelize.STRING, unique: true, field: 'username'},
+    password: {type: Sequelize.STRING}
+}, {
+    freezeTableName: true // dont pluralize the table name
 });
 
-userSchema.pre('save', function (done) {
-    let user = this;
-    if (!user.isModified('password')) {return done()}
 
-    bcrypt.genSalt(SALT_FACTOR, function (err, salt) {
-        if (err) {return done(err);}
-        let noop = function () {};
-        bcrypt.hash(user.password, salt, noop(), function (err, hashedPassword) {
-            if (err) {return done(err);}
-            user.password = hashedPassword;
-            console.log('password saved');
-            done();
+User.beforeCreate(function (user, options) {
+    if (!user.changed('password')) return;
+
+    return hashPassword(user.password)
+        .then(hashedPassword => {
+           user.password = hashedPassword;
         })
-    })
+        .catch(err => console.log(err));
 });
 
-userSchema.methods.checkPassword = function(guess) {
+function hashPassword(password) {
+    let salt_factor = 10;
     return new Promise((resolve, reject) => {
-        bcrypt.compare(guess, this.password, (err, isMatch) => {
-            if (err) return reject(err);
-            if (!isMatch) return reject(new Error('IncorrectPasswordError'));
-            resolve(isMatch);
-        });
+        let salt = bcrypt.genSaltSync(salt_factor);
+        let hashedPassword = bcrypt.hashSync(password, salt);
+        resolve(hashedPassword);
+    });
+}
+
+User.Instance.prototype.checkPassword = function(guess) {
+    return new Promise((resolve, reject) => {
+        let isMatch = bcrypt.compareSync(guess, this.password);
+        if(!isMatch) return reject(new Error('IncorrectPasswordError'));
+        resolve(isMatch);
     });
 };
 
-let User = mongoose.model('user', userSchema);
-
+User.sync();
+// User.sync({force: true});
 module.exports = User;
