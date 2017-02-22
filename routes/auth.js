@@ -3,10 +3,9 @@
  */
 let express = require('express');
 let jwt = require('jsonwebtoken');
-let config = require('../config');
-let User = require('../models/user');
+let config = require('../config/config');
 
-let checkUserLoggedIn = require('../helpers/checkUserLoggedIn');
+let User = require('../models/user');
 
 let authRouter = express.Router();
 
@@ -29,16 +28,14 @@ function handleSuccess(res, user) {
 
 function buildToken(user) {
     return jwt.sign({username: user.username, password: user.password},
-        config.secret,
+        config.token_secret,
         {expiresIn: 20}
     );
 }
 
 authRouter.get('/', function (req, res, next) {
-    let token = req.query.token;
-    checkUserLoggedIn(token)
-        .then(() => res.json({isLoggedIn: true}))
-        .catch(err => res.json({isLoggedIn:false}));
+    let isLoggedIn = req.user != null;
+    res.json({isLoggedIn: isLoggedIn});
 });
 
 module.exports = authRouter;

@@ -2,16 +2,16 @@
  * Created by ruan0408 on 09/02/17.
  */
 
-let sequelize = require('../sequelize');
-let Sequelize = require('sequelize');
+let sequelize = require('../config/sequelize').sequelize;
+let DataTypes = require('sequelize').DataTypes;
 let bcrypt = require("bcrypt-nodejs");
 
 let User = sequelize.define('user', {
-    username: {type: Sequelize.STRING, unique: true, field: 'username'},
-    password: {type: Sequelize.STRING},
-    admin:    {type: Sequelize.BOOLEAN, allowNull: false}
+    username: {type: DataTypes.STRING, unique: true, field: 'username'},
+    password: {type: DataTypes.STRING},
+    admin:    {type: DataTypes.BOOLEAN, allowNull: false}
 }, {
-    freezeTableName: true // dont pluralize the table name
+    freezeTableName: true
 });
 
 User.beforeCreate(function (user, options) {

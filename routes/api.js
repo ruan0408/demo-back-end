@@ -5,5 +5,8 @@
 let express = require('express');
 
 let apiRouter = express.Router();
+let authenticate = require('../middleware/authenticate');
+
+apiRouter.use(authenticate);
 
 module.exports = apiRouter;

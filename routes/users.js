@@ -5,7 +5,14 @@
 let express = require('express');
 
 let User = require('../models/user');
+
 let usersRouter = express.Router();
+
+let respondIfNotLogged = require('../middleware/respondIfNotLogged');
+let respondIfNotAdmin = require('../middleware/respondIfNotAdmin');
+
+usersRouter.use(respondIfNotLogged);
+usersRouter.use(respondIfNotAdmin);
 
 usersRouter.get('/', function (req, res, next) {
     User.findAll()
@@ -19,10 +26,7 @@ usersRouter.post('/', function (req, res, next) {
     let isAdmin = req.body.admin;
 
     User.create({username: username, password: password, admin: isAdmin})
-        .then(user => {
-            console.log(`${user.username} saved`);
-            res.send(user);
-        })
+        .then(user => res.send(user))
         .catch(err => next(err));
 });
 

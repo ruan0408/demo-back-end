@@ -7,7 +7,10 @@ let express = require('express');
 let adminRouter = express.Router();
 
 adminRouter.get('/', function (req, res) {
-    res.json({isAdmin: true});
+    if (req.user && req.user.admin)
+        res.json({isAdmin: true});
+    else
+        res.json({isAdmin: false});
 });
 
 module.exports = adminRouter;
