@@ -8,9 +8,9 @@ function checkAuthentication (req, res, next) {
     let token = req.body.token || req.query.token || req.headers['access-token'];
 
     checkUserLoggedIn(token)
-        .then(isUserLoggedIn => {
-            if (isUserLoggedIn) next();
-            else next(new Error('UnauthenticatedUserError'));
+        .then(user => {
+            req.user = user;
+            next();
         })
         .catch(err => next(err));
 }

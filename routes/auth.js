@@ -12,7 +12,7 @@ let authRouter = express.Router();
 
 authRouter.post('/', function(req, res, next) {
     let myUser;
-    User.findOne({ username: req.body.username })
+    User.findOne({ where: {username: req.body.username} })
         .then(user => {
             myUser = user;
             return user.checkPassword(req.body.password)
@@ -37,8 +37,8 @@ function buildToken(user) {
 authRouter.get('/', function (req, res, next) {
     let token = req.query.token;
     checkUserLoggedIn(token)
-        .then(isLoggedIn => res.json({isLoggedIn: isLoggedIn}))
-        .catch(err => next(err));
+        .then(() => res.json({isLoggedIn: true}))
+        .catch(err => res.json({isLoggedIn:false}));
 });
 
 module.exports = authRouter;

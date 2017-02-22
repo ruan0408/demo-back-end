@@ -16,8 +16,9 @@ usersRouter.get('/', function (req, res, next) {
 usersRouter.post('/', function (req, res, next) {
     let username = req.body.username;
     let password = req.body.password;
+    let isAdmin = req.body.admin;
 
-    User.create({username: username, password: password})
+    User.create({username: username, password: password, admin: isAdmin})
         .then(user => {
             console.log(`${user.username} saved`);
             res.send(user);

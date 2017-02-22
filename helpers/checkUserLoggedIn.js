@@ -8,10 +8,10 @@ let User = require('../models/user');
 function checkUserLoggedIn(token) {
     return new Promise(resolve => {
         let decodedUser = jwt.verify(token, config.secret);
-        resolve(User.findOne({username: decodedUser.username}))
+        resolve(User.findOne({ where: {username: decodedUser.username} }))
     })
-        .then(() => Promise.resolve(true))
-        .catch(() => Promise.resolve(false));
+        .then((user) => Promise.resolve(user))
+        .catch(() => Promise.reject(new Error('UnauthenticatedUserError')));
 }
 
 module.exports = checkUserLoggedIn;

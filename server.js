@@ -11,9 +11,12 @@ let config = require('./config');
 
 let apiRouter = require('./routes/api');
 let authRouter = require('./routes/auth');
+let adminRouter = require('./routes/admin');
 let usersRouter = require('./routes/users');
 let protectedRouter = require('./routes/protected');
+
 let authMiddleware = require('./middleware/auth');
+let adminMiddleware = require('./middleware/isAdmin');
 
 let app = express();
 
@@ -33,13 +36,16 @@ app.use('/auth', authRouter);
 app.use('/api', apiRouter);
 
 // bypass the registration routing
-apiRouter.use('/users', usersRouter);
 
 // from here on, the routes will be protected
 apiRouter.use(authMiddleware);
 apiRouter.use('/protected', protectedRouter);
 
-app.use(function (err, req, res, next) {
+apiRouter.use(adminMiddleware);
+apiRouter.use('/users', usersRouter);
+apiRouter.use('/admin', adminRouter);
+
+app.use(function errorHandler(err, req, res, next) {
     console.log(err);
     res.end();
 });
